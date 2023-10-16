@@ -1,0 +1,9 @@
+departamento (#id, nombre, *jefe)
+tabla empleado (#id, nombre, salario, nacimiento, *departamento)
+* = clave ajena
+
+si se elimina departamento, empl pasa a departamento NULL
+si jefe dep desaparece, jefe de departamento pasa a NULL
+
+sgbd: Multi SGBD [sqlite|mariadb]
+(empezar con sqlite para mas tarde pasarlo a mariadb)
