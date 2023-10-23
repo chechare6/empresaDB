@@ -14,10 +14,10 @@ public class Empleado {
 	private int id; 
 	private String nombre;
 	private double salario;
-	private Date fechaN;
+	private LocalDate fechaN;
 	private Departamento departamento;
 	
-	public Empleado(int id, String nombre, double salario, Date fechaN) {
+	public Empleado(int id, String nombre, double salario, LocalDate fechaN) {
 		this.id = id;
 		this.nombre = nombre;
 		this.salario = salario;
