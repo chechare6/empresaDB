@@ -24,9 +24,9 @@ public class Main {
 			conn = DriverManager.getConnection("jdbc:sqlite:empresaDB.db");
 			Statement s = conn.createStatement();
 			s.execute(
-					"CREATE TABLE IF NOT EXISTS EMPLEADOS (ID INTEGER PRIMARY KEY AUTOINCREMENT, NOMBRE VARCHAR NOT NULL, SALARIO INT NOT NULL, NACIMIENTO DATE NOT NULL, DEPARTAMENTO INTEGER);");
+					"CREATE TABLE IF NOT EXISTS EMPLEADOS (ID INTEGER PRIMARY KEY AUTOINCREMENT, NOMBRE VARCHAR NOT NULL, SALARIO INT NOT NULL, NACIMIENTO DATE NOT NULL, DEPARTAMENTO INTEGER, FOREIGN KEY(DEPARTAMENTO) REFERENCES DEPARTAMENTOS(ID));");
 			s.execute(
-					"CREATE TABLE IF NOT EXISTS DEPARTAMENTOS (ID INTEGER PRIMARY KEY AUTOINCREMENT, NOMBRE VARCHAR NOT NULL, IDJEFE INTEGER);");
+					"CREATE TABLE IF NOT EXISTS DEPARTAMENTOS (ID INTEGER PRIMARY KEY AUTOINCREMENT, NOMBRE VARCHAR NOT NULL,IDJEFE INTEGER, FOREIGN KEY(IDJEFE) REFERENCES EMPLEADOS(ID));");
 			bdAbierta = true;
 			System.out.println("Conexión realizada");
 			while (bdAbierta) {
@@ -43,7 +43,7 @@ public class Main {
 					addDepartamento();
 					break;
 				case 3:
-					System.out.println("Has elegido eliminar 'Departamentos'");
+					eliminarDepartamento();
 					break;
 				case 4:
 					verEmpleado();
@@ -52,7 +52,7 @@ public class Main {
 					addEmpleado();
 					break;
 				case 6:
-					System.out.println("Has elegido eliminar 'Empleados'");
+					eliminarEmpleado();
 					break;
 				case 7:
 					bdAbierta = false;
@@ -147,6 +147,19 @@ public class Main {
 		}
 	}
 
+	public static void eliminarDepartamento() {
+		System.out.print("¿Qué departamento quieres eliminar?: ");
+		Integer depElim = IO.readInt();
+		try {
+			String sql = "DELETE FROM DEPARTAMENTOS WHERE ID = ?";
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setInt(1, depElim);
+			ps.executeUpdate();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+	
 	public static void verEmpleado() {
 		System.out.println("-------------------------");
 		System.out.println("Has elegido ver empleados.");
@@ -229,6 +242,19 @@ public class Main {
 		}
 	}
 
+	public static void eliminarEmpleado() {
+		System.out.println("¿Qué empleado quieres eliminar?: ");
+		Integer empElim = IO.readInt();
+		try {
+			String sql = "DELETE FROM EMPLEADOS WHERE ID = ?";
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setInt(1, empElim);
+			ps.executeUpdate();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+	
 	private static Empleado buscaEmpleado(Integer id) {
 		try {
 			String sql = "SELECT * FROM EMPLEADOS WHERE ID = ?";
