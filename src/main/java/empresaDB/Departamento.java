@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Departamento {
-	private int id;
+	private Integer id;
 	private String nombre;
 	private Empleado jefe;
 	
@@ -21,6 +21,11 @@ public class Departamento {
 	}
 	
 	public Departamento(String nombre) {
+		this.nombre = nombre;
+	}
+	
+	public Departamento(Integer id, String nombre) {
+		this.id = id;
 		this.nombre = nombre;
 	}
 }

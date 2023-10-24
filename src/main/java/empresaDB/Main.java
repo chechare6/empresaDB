@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.Scanner;
+import java.util.concurrent.locks.ReadWriteLock;
 
 import IO.IO;
 
@@ -16,23 +17,24 @@ public class Main {
 
 	static Connection conn;
 	static boolean bdAbierta;
-	static int opcion;
+//	static int opcion;
 
 	public static void main(String[] args) {
 		try {
 			conn = DriverManager.getConnection("jdbc:sqlite:empresaDB.db");
 			Statement s = conn.createStatement();
 			s.execute(
-					"CREATE TABLE IF NOT EXISTS EMPLEADOS (ID INTEGER PRIMARY KEY AUTOINCREMENT, NOMBRE VARCHAR NOT NULL, SALARIO INT NOT NULL, NACIMIENTO DATE NOT NULL, DEPARTAMENTO VARCHAR);");
+					"CREATE TABLE IF NOT EXISTS EMPLEADOS (ID INTEGER PRIMARY KEY AUTOINCREMENT, NOMBRE VARCHAR NOT NULL, SALARIO INT NOT NULL, NACIMIENTO DATE NOT NULL, DEPARTAMENTO INTEGER);");
 			s.execute(
-					"CREATE TABLE IF NOT EXISTS DEPARTAMENTOS (ID INTEGER PRIMARY KEY AUTOINCREMENT, NOMBRE VARCHAR NOT NULL, IDJEFE INT);");
+					"CREATE TABLE IF NOT EXISTS DEPARTAMENTOS (ID INTEGER PRIMARY KEY AUTOINCREMENT, NOMBRE VARCHAR NOT NULL, IDJEFE INTEGER);");
 			bdAbierta = true;
 			System.out.println("Conexión realizada");
 			while (bdAbierta) {
 				System.out.println("-------------------------");
 				System.out.println("BBDD DE EMPRESA\n");
-				System.out.print("DEPARTAMENTOS:\n 1. Ver | 2. Añadir | 3. Eliminar\nEMPLEADOS:\n 4. Ver | 5. Añadir | 6. Eliminar \nSALIR:\n 7. Salir\nEliga una opción: ");
-				opcion = IO.readInt();//sc.nextLine();
+				System.out.print(
+						"DEPARTAMENTOS:\n 1. Ver | 2. Añadir | 3. Eliminar\nEMPLEADOS:\n 4. Ver | 5. Añadir | 6. Eliminar \nSALIR:\n 7. Salir\nEliga una opción: ");
+				int opcion = IO.readInt();// sc.nextLine();
 				switch (opcion) {
 				case 1:
 					verDepartamento();
@@ -70,6 +72,7 @@ public class Main {
 			System.out.println("Conexión fallida: " + e.getMessage());
 		}
 	}
+
 	public static void verDepartamento() {
 		System.out.println("-------------------------");
 		System.out.println("Has elegido ver departamentos.");
@@ -77,18 +80,21 @@ public class Main {
 			String sql = "SELECT * FROM DEPARTAMENTOS";
 			Statement s = conn.createStatement();
 			ResultSet rs = s.executeQuery(sql);
-			while(rs.next()) {
-				Departamento d = new Departamento(rs.getInt("ID"), rs.getString("NOMBRE"), buscaEmpleado(rs.getInt("IDJEFE")));
-				if(d.getJefe() != null)
-					System.out.println("	ID: " + d.getId() + " | Nombre Departamento: " + d.getNombre() + " | Jefe Departamento: " + d.getJefe().getNombre() + ", ID: " + d.getJefe().getId());
+			while (rs.next()) {
+				Departamento d = new Departamento(rs.getInt("ID"), rs.getString("NOMBRE"),
+						buscaEmpleado(rs.getInt("IDJEFE")));
+				if (d.getJefe() != null)
+					System.out.println("	ID: " + d.getId() + " | Nombre Departamento: " + d.getNombre()
+							+ " | Jefe Departamento: " + d.getJefe().getNombre() + ", ID: " + d.getJefe().getId());
 				else
-					System.out.println("	ID: " + d.getId() + " | Nombre Departamento: " + d.getNombre() + " | Jefe Departamento: NO HAY JEFE");
+					System.out.println("	ID: " + d.getId() + " | Nombre Departamento: " + d.getNombre()
+							+ " | Jefe Departamento: " + d.getJefe());
 			}
 			s.close();
 			rs.close();
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-		}		
+		}
 	}
 
 	public static void addDepartamento() {
@@ -109,7 +115,7 @@ public class Main {
 				ps.setString(1, dConJefe.getNombre());
 				ps.setInt(2, idJefe);
 				int add = ps.executeUpdate();
-				if(add > 0) {
+				if (add > 0) {
 					System.out.println("Departamento añadido con éxito");
 				} else {
 					System.out.println("No se pudo añadir el departamento");
@@ -118,7 +124,6 @@ public class Main {
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
 			}
-			//SIN TERMINAR
 			break;
 		case 'N':
 			Departamento dSinJefe = new Departamento(nombre);
@@ -127,7 +132,7 @@ public class Main {
 				PreparedStatement ps = conn.prepareStatement(sql);
 				ps.setString(1, dSinJefe.getNombre());
 				int add = ps.executeUpdate();
-				if(add > 0)
+				if (add > 0)
 					System.out.println("Departamento añadido con éxito.");
 				else
 					System.out.println("No se pudo añadir el departamento");
@@ -141,7 +146,7 @@ public class Main {
 			break;
 		}
 	}
-	
+
 	public static void verEmpleado() {
 		System.out.println("-------------------------");
 		System.out.println("Has elegido ver empleados.");
@@ -149,13 +154,14 @@ public class Main {
 			String sql = "SELECT * FROM EMPLEADOS";
 			Statement s = conn.createStatement();
 			ResultSet rs = s.executeQuery(sql);
-			while(rs.next()) {
-				int id = rs.getInt("ID");
-				String nombre = rs.getString("NOMBRE");
-				double salario = rs.getDouble("SALARIO");
-				LocalDate fechaN = rs.getObject("NACIMIENTO", LocalDate.class);
-				String departamento = null;
-				System.out.println("	ID: " + id + " | Nombre Empleado: " + nombre + " | Salario: " + salario + "€ | Fecha de nacimiento: " + fechaN + " | Departamento: " + departamento);
+			while (rs.next()) {
+				Empleado e = new Empleado(rs.getInt("ID"), rs.getString("NOMBRE"), rs.getDouble("SALARIO"), rs.getObject("NACIMIENTO", LocalDate.class), buscaDep(rs.getInt("DEPARTAMENTO")));
+				if(e.getDepartamento() != null)
+				System.out.println("	ID: " + e.getId() + " | Nombre Empleado: " + e.getNombre() + " | Salario: " + e.getSalario()
+						+ "€ | Fecha de nacimiento: " + e.getFechaN() + " | Departamento: " + e.getDepartamento().getNombre());
+				else
+					System.out.println("	ID: " + e.getId() + " | Nombre Empleado: " + e.getNombre() + " | Salario: " + e.getSalario()
+						+ "€ | Fecha de nacimiento: " + e.getFechaN() + " | Departamento: " + e.getDepartamento());
 			}
 			s.close();
 			rs.close();
@@ -177,10 +183,29 @@ public class Main {
 		char departamento = Character.toUpperCase(IO.readChar());
 		switch (departamento) {
 		case 'S':
-			System.out.println("Tiene departamento");
+			System.out.print("Id del departamento: ");
+			int idDepart = IO.readInt();
+			Empleado empl = new Empleado(nombre, salario, fechaN, buscaDep(idDepart));
+			System.out.println(buscaDep(idDepart));
+			try {
+				String sql = "INSERT INTO EMPLEADOS(NOMBRE, SALARIO, NACIMIENTO, DEPARTAMENTO) VALUES (?, ?, ?, ?)";
+				PreparedStatement ps = conn.prepareStatement(sql);
+				ps.setString(1, empl.getNombre());
+				ps.setDouble(2, empl.getSalario());
+				ps.setObject(3, empl.getFechaN());
+				ps.setInt(4, buscaDep(idDepart).getId());
+				int add = ps.executeUpdate();
+				if (add > 0) {
+					System.out.println("Empleado añadido con éxito");
+				} else {
+					System.out.println("No se pudo añadir el empleado");
+				}
+				ps.close();
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+			}
 			break;
 		case 'N':
-			System.out.println("No tiene departamento");
 			try {
 				String sql = "INSERT INTO EMPLEADOS(NOMBRE, SALARIO, NACIMIENTO) VALUES (?, ?, ?)";
 				PreparedStatement ps = conn.prepareStatement(sql);
@@ -188,13 +213,12 @@ public class Main {
 				ps.setDouble(2, salario);
 				ps.setObject(3, fechaN);
 				int add = ps.executeUpdate();
-				if(add > 0) {
+				if (add > 0) {
 					System.out.println("Empleado añadido con éxito.");
-				}
-				else {
+				} else {
 					System.out.println("No se pudo añadir al empleado");
 				}
-				ps.close();				
+				ps.close();
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
 			}
@@ -204,18 +228,18 @@ public class Main {
 			break;
 		}
 	}
-	
-	private static Empleado buscaEmpleado(int id) {
+
+	private static Empleado buscaEmpleado(Integer id) {
 		try {
 			String sql = "SELECT * FROM EMPLEADOS WHERE ID LIKE '" + id + "'";
 			Statement s = conn.createStatement();
 			ResultSet rs = s.executeQuery(sql);
-			while(rs.next()) {
-				int idEmpleado = rs.getInt("ID");
+			while (rs.next()) {
+				Integer idEmpleado = rs.getInt("ID");
 				String nombre = rs.getString("NOMBRE");
 				double salario = rs.getDouble("SALARIO");
 				LocalDate fechaN = rs.getObject("NACIMIENTO", LocalDate.class);
-				Departamento departamento = null; //CAMBIAR
+				Departamento departamento = null; // CAMBIAR
 				Empleado e = new Empleado(idEmpleado, nombre, salario, fechaN, departamento);
 				return e;
 			}
@@ -227,4 +251,20 @@ public class Main {
 		return null;
 	}
 	
+	private static Departamento buscaDep(Integer id) {
+		try {
+			String sql = "SELECT * FROM DEPARTAMENTOS WHERE ID = '" + id + "'";
+			Statement s = conn.createStatement();
+			ResultSet rs = s.executeQuery(sql);
+			while(rs.next()) {
+				String nombre = rs.getString("NOMBRE");
+				Departamento d = new Departamento(id, nombre);
+				return d;
+			}
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return null;
+	}
+
 }

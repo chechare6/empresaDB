@@ -1,6 +1,5 @@
 package empresaDB;
 
-import java.sql.Date;
 import java.time.LocalDate;
 
 import lombok.AllArgsConstructor;
@@ -11,17 +10,16 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Empleado {
-	private int id; 
+	private Integer id; 
 	private String nombre;
 	private double salario;
 	private LocalDate fechaN;
 	private Departamento departamento;
 	
-	public Empleado(int id, String nombre, double salario, LocalDate fechaN) {
-		this.id = id;
+	public Empleado(String nombre, double salario, LocalDate fechaN, Departamento departamento) {
 		this.nombre = nombre;
 		this.salario = salario;
 		this.fechaN = fechaN;
+		this.departamento = departamento;
 	}
-	
 }
