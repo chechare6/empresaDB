@@ -231,9 +231,10 @@ public class Main {
 
 	private static Empleado buscaEmpleado(Integer id) {
 		try {
-			String sql = "SELECT * FROM EMPLEADOS WHERE ID LIKE '" + id + "'";
-			Statement s = conn.createStatement();
-			ResultSet rs = s.executeQuery(sql);
+			String sql = "SELECT * FROM EMPLEADOS WHERE ID = ?";
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setInt(1, id);
+			ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
 				Integer idEmpleado = rs.getInt("ID");
 				String nombre = rs.getString("NOMBRE");
@@ -243,7 +244,7 @@ public class Main {
 				Empleado e = new Empleado(idEmpleado, nombre, salario, fechaN, departamento);
 				return e;
 			}
-			s.close();
+			ps.close();
 			rs.close();
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -253,9 +254,10 @@ public class Main {
 	
 	private static Departamento buscaDep(Integer id) {
 		try {
-			String sql = "SELECT * FROM DEPARTAMENTOS WHERE ID = '" + id + "'";
-			Statement s = conn.createStatement();
-			ResultSet rs = s.executeQuery(sql);
+			String sql = "SELECT * FROM DEPARTAMENTOS WHERE ID = ?";
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setInt(1, id);
+			ResultSet rs = ps.executeQuery();
 			while(rs.next()) {
 				String nombre = rs.getString("NOMBRE");
 				Departamento d = new Departamento(id, nombre);
