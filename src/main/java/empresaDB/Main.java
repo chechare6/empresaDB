@@ -12,6 +12,8 @@ import java.util.Scanner;
 import java.util.concurrent.locks.ReadWriteLock;
 
 import IO.IO;
+import model.Departamento;
+import model.Empleado;
 
 public class Main {
 
@@ -33,7 +35,7 @@ public class Main {
 				System.out.println("-------------------------");
 				System.out.println("BBDD DE EMPRESA\n");
 				System.out.print(
-						"DEPARTAMENTOS:\n 1. Ver | 2. Añadir | 3. Eliminar\nEMPLEADOS:\n 4. Ver | 5. Añadir | 6. Eliminar \nSALIR:\n 7. Salir\nEliga una opción: ");
+						"DEPARTAMENTOS:\n 1. Ver | 2. Añadir | 3. Eliminar\nEMPLEADOS:\n 4. Ver | 5. Añadir | 6. Eliminar \nSALIR:\n 7. Salir\nElija una opción: ");
 				int opcion = IO.readInt();// sc.nextLine();
 				switch (opcion) {
 				case 1:
@@ -262,12 +264,8 @@ public class Main {
 			ps.setInt(1, id);
 			ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
-				Integer idEmpleado = rs.getInt("ID");
 				String nombre = rs.getString("NOMBRE");
-				double salario = rs.getDouble("SALARIO");
-				LocalDate fechaN = rs.getObject("NACIMIENTO", LocalDate.class);
-				Departamento departamento = null; // CAMBIAR
-				Empleado e = new Empleado(idEmpleado, nombre, salario, fechaN, departamento);
+				Empleado e = new Empleado(id, nombre);
 				return e;
 			}
 			ps.close();
@@ -278,21 +276,6 @@ public class Main {
 		return null;
 	}
 	
-	private static Departamento buscaDep(Integer id) {
-		try {
-			String sql = "SELECT * FROM DEPARTAMENTOS WHERE ID = ?";
-			PreparedStatement ps = conn.prepareStatement(sql);
-			ps.setInt(1, id);
-			ResultSet rs = ps.executeQuery();
-			while(rs.next()) {
-				String nombre = rs.getString("NOMBRE");
-				Departamento d = new Departamento(id, nombre);
-				return d;
-			}
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-		}
-		return null;
-	}
+	
 
 }

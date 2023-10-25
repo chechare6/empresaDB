@@ -1,4 +1,4 @@
-package empresaDB;
+package model;
 
 import java.time.LocalDate;
 
@@ -21,5 +21,16 @@ public class Empleado {
 		this.salario = salario;
 		this.fechaN = fechaN;
 		this.departamento = departamento;
+	}
+	
+	public Empleado(String nombre, double salario, LocalDate fechaN) {
+		this.nombre = nombre;
+		this.salario = salario;
+		this.fechaN = fechaN;
+	}
+	
+	public Empleado(Integer id, String nombre) {
+		this.id = id;
+		this.nombre = nombre;
 	}
 }
