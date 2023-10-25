@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.sql.Types;
 import java.time.LocalDate;
 
 import lombok.Data;
@@ -31,6 +32,7 @@ public class EmpleadoSQL {
 					ID INTEGER PRIMARY KEY AUTOINCREMENT,
 					NOMBRE TEXT NOT NULL,
 					SALARIO REAL NOT NULL,
+					NACIMIENTO DATE NOT NULL,
 					DEPARTAMENTO INTEGER,
 					FOREIGN KEY(DEPARTAMENTO) REFERENCES DEPARTAMENTO(ID)
 					)
@@ -90,8 +92,8 @@ public class EmpleadoSQL {
 		return null;
 	}
 
-	// AÑADE EMPLEADO CON DEPARTAMENTO
-	public boolean addCDep(Empleado e) {
+	// AÑADE EMPLEADO
+	public boolean add(Empleado e) {
 		String sql = """
 				INSERT INTO EMPLEADOS(NOMBRE, SALARIO, NACIMIENTO, DEPARTAMENTO)
 				VALUES (?, ?, ?, ?)
@@ -101,25 +103,10 @@ public class EmpleadoSQL {
 			ps.setString(1, e.getNombre());
 			ps.setDouble(2, e.getSalario());
 			ps.setObject(3, e.getFechaN());
-			ps.setInt(4, e.getDepartamento().getId());
-			return ps.executeUpdate() > 0;
-		} catch (Exception error) {
-			error.printStackTrace();
-		}
-		return false;
-	}
-
-	// AÑADE EMPLEADO SIN DEPARTAMENTO
-	public boolean addSDep(Empleado e) {
-		String sql = """
-				INSERT INTO EMPLEADOS(NOMBRE, SALARIO, NACIMIENTO)
-				VALUES (?, ?, ?)
-				""";
-		try {
-			PreparedStatement ps = conn.prepareStatement(sql);
-			ps.setString(1, e.getNombre());
-			ps.setDouble(2, e.getSalario());
-			ps.setObject(3, e.getFechaN());
+			if(e.getDepartamento() == null)
+				ps.setNull(4, Types.INTEGER);
+			else
+				ps.setInt(4, e.getDepartamento().getId());
 			return ps.executeUpdate() > 0;
 		} catch (Exception error) {
 			error.printStackTrace();
@@ -155,6 +142,7 @@ public class EmpleadoSQL {
 		}
 	}
 
+	//METODO DE LECTURA DE EMPLEADO
 	private Empleado read(ResultSet rs) {
 		try {
 			Integer id = rs.getInt("ID");
@@ -169,6 +157,11 @@ public class EmpleadoSQL {
 		return null;
 	}
 
+	/**
+	 * BUSCA DEPARTAMENTO SEGÚN ID
+	 * @param id
+	 * @return Departamento
+	 */
 	public Departamento searchDep(Integer id) {
 		String sql = """
 				SELECT * FROM DEPARTAMENTOS WHERE ID = ?
