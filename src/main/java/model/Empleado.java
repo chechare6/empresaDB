@@ -23,7 +23,14 @@ public class Empleado {
 		this.departamento = departamento;
 	}
 	
-	public Empleado(String nombre, double salario, LocalDate fechaN) {
+	public Empleado (String nombre, double salario, LocalDate fechaN) {
+		this.nombre = nombre;
+		this.salario = salario;
+		this.fechaN = fechaN;
+	}
+	
+	public Empleado(Integer id, String nombre, double salario, LocalDate fechaN) {
+		this.id = id;
 		this.nombre = nombre;
 		this.salario = salario;
 		this.fechaN = fechaN;

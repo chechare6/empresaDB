@@ -31,9 +31,9 @@ public class BD {
 			new BD();
 		return conn;
 	}
-	
+
 	public static void close() {
-		if(conn != null)
+		if (conn != null)
 			try {
 				conn.close();
 			} catch (Exception e) {

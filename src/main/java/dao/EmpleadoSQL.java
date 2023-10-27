@@ -7,6 +7,7 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.time.LocalDate;
 
+import IO.IO;
 import lombok.Data;
 import model.Departamento;
 import model.Empleado;
@@ -34,7 +35,7 @@ public class EmpleadoSQL {
 					SALARIO REAL NOT NULL,
 					NACIMIENTO DATE NOT NULL,
 					DEPARTAMENTO INTEGER,
-					FOREIGN KEY(DEPARTAMENTO) REFERENCES DEPARTAMENTO(ID)
+					FOREIGN KEY(DEPARTAMENTO) REFERENCES DEPARTAMENTOS(ID)
 					)
 					""";
 		if (BD.typeDB.equals("mariadb"))
@@ -45,14 +46,13 @@ public class EmpleadoSQL {
 					    SALARIO DOUBLE NOT NULL,
 					    NACIMIENTO DATE NOT NULL,
 					    DEPARTAMENTO INT,
-					    FOREIGN KEY (DEPARTAMENTO) REFERENCES DEPARTAMENTOS(ID)
-
-					);
+					    FOREIGN KEY (DEPARTAMENTO) REFERENCES DEPARTAMENTOS (ID)
+					)
 					""";
 		try {
 			conn.createStatement().executeUpdate(sql);
 		} catch (Exception e) {
-			e.printStackTrace();
+			IO.println(e.getMessage());
 		}
 	}
 
@@ -103,7 +103,7 @@ public class EmpleadoSQL {
 			ps.setString(1, e.getNombre());
 			ps.setDouble(2, e.getSalario());
 			ps.setObject(3, e.getFechaN());
-			if(e.getDepartamento() == null)
+			if (e.getDepartamento() == null)
 				ps.setNull(4, Types.INTEGER);
 			else
 				ps.setInt(4, e.getDepartamento().getId());
@@ -142,7 +142,7 @@ public class EmpleadoSQL {
 		}
 	}
 
-	//METODO DE LECTURA DE EMPLEADO
+	// METODO DE LECTURA DE EMPLEADO
 	private Empleado read(ResultSet rs) {
 		try {
 			Integer id = rs.getInt("ID");
@@ -159,6 +159,7 @@ public class EmpleadoSQL {
 
 	/**
 	 * BUSCA DEPARTAMENTO SEGÚN ID
+	 * 
 	 * @param id
 	 * @return Departamento
 	 */

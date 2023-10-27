@@ -5,7 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Types;
+import java.time.LocalDate;
 
+import IO.IO;
 import model.Departamento;
 import model.Empleado;
 
@@ -37,18 +39,17 @@ public class DepartamentoSQL {
 					""";
 		if (BD.typeDB.equals("mariadb"))
 			sql = """
-					CREATE TABLE IF NOT EXISTS EMPLEADOS (
+					CREATE TABLE IF NOT EXISTS DEPARTAMENTOS (
 					    ID INT AUTO_INCREMENT PRIMARY KEY,
 					    NOMBRE VARCHAR(255) NOT NULL,
 					    JEFE INT,
-					    FOREIGN KEY (JEFE) REFERENCES EMPLEADOS(ID)
-
-					);
+						FOREIGN KEY (JEFE) REFERENCES EMPLEADOS (ID)
+					)
 					""";
 		try {
 			conn.createStatement().executeUpdate(sql);
 		} catch (Exception e) {
-			e.printStackTrace();
+			IO.println(e.getMessage());
 		}
 	}
 
@@ -170,7 +171,9 @@ public class DepartamentoSQL {
 			ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
 				String nombre = rs.getString("NOMBRE");
-				return new Empleado(id, nombre);
+				double salario = rs.getDouble("SALARIO");
+				LocalDate fechaN = rs.getObject("NACIMIENTO", LocalDate.class);
+				return new Empleado(id, nombre, salario, fechaN);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
