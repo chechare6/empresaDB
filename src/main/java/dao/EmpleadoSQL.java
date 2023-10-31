@@ -45,8 +45,7 @@ public class EmpleadoSQL {
 					    NOMBRE VARCHAR(255) NOT NULL,
 					    SALARIO DOUBLE NOT NULL,
 					    NACIMIENTO DATE NOT NULL,
-					    DEPARTAMENTO INT,
-					    FOREIGN KEY (DEPARTAMENTO) REFERENCES DEPARTAMENTOS (ID)
+					    DEPARTAMENTO INT
 					)
 					""";
 		try {

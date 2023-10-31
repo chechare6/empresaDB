@@ -1,11 +1,11 @@
 #Conexión a SQLite
-db = sqlite
-driver = org.sqlite.JDBC
-dsn = jdbc:sqlite:agenda.sqlite
+#db = sqlite
+#driver = org.sqlite.JDBC
+#dsn = jdbc:sqlite:agenda.sqlite
 
 #Conexión a MariaDB
-#db = mariadb
-#driver = org.mariadb.jdbc.Driver
-#dsn = jdbc:mariadb://172.21.64.1:7706/empresaDB
-#user = root
-#pass = toor
+db = mariadb
+driver = org.mariadb.jdbc.Driver
+dsn = jdbc:mariadb://172.30.80.1:7706/empresaDB
+user = root
+pass = toor

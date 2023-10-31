@@ -12,9 +12,9 @@ import model.Empleado;
 public class Menu {
 
 	public static void main(String[] args) {
-		DepartamentoSQL d = new DepartamentoSQL();
 		EmpleadoSQL e = new EmpleadoSQL();
-
+		DepartamentoSQL d = new DepartamentoSQL();
+		
 		List<String> opciones = List.of("1. Ver departamentos", "2. Añadir departamentos", "3. Eliminar departamentos",
 				"4. Ver empleados", "5. Añadir empleados", "6. Eliminar empleados", "7. Salir");
 		while (true) {

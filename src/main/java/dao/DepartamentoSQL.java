@@ -48,6 +48,10 @@ public class DepartamentoSQL {
 					""";
 		try {
 			conn.createStatement().executeUpdate(sql);
+			sql = """
+					ALTER TABLE EMPLEADOS ADD FOREIGN KEY (DEPARTAMENTO) REFERENCES DEPARTAMENTOS (ID);
+					""";
+			conn.createStatement().executeUpdate(sql);
 		} catch (Exception e) {
 			IO.println(e.getMessage());
 		}
